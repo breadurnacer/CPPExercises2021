@@ -3,13 +3,14 @@
 
 // таким образом подключаются наши функции
 #include "simple_sum.h"
+#include "some_math.h"
+
 
 int main() {
     // таким образом выводятся сообщения в консоль
     // std::cout = "standard console output" = поток информации в консоль
     // std::endl = "standard end of line" = конец строчки (то же что и "\n")
     std::cout << "Hello World!" << std::endl;
-
     int a = 10;
     std::cout << "Please enter b=";
     int b;
@@ -22,7 +23,7 @@ int main() {
     std::cout << "a+b=" << a << "+" << b << "=" << res << std::endl;
 
     // TODO 06 выведите в консоль чему равно fibbonachiFast(b), не забудьте что нужно добавить не хватающий инклюд - some_math.h в которой объявлена эта функция
-    // std::cout << "fib(b)=" <<
+     std::cout << "fib(b)=" << fibbonachiFast(b) << std::endl;
 
     std::vector<double> values;
     std::cout << "values size: " << values.size() << std::endl;
@@ -36,6 +37,7 @@ int main() {
     // TODO 07 выведите в консоль каждый элемент из динамического массива
     for (int i = 0; i < values.size(); ++i) {
         double x = values[i];
+        std::cout << x << std::endl;
     }
 
     // TODO 08 считывайте числа из консоли (и добавляйте их в вектор) до тех пор пока не будет введен ноль, после чего просуммируйте считанные числа и выведите сумму
@@ -45,6 +47,5 @@ int main() {
     //         break;
     //     }
     // }
-
     return 0;
 }

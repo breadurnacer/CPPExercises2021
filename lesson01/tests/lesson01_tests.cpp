@@ -33,9 +33,34 @@ TEST(lesson01, fib10) {
     GTEST_ASSERT_EQ(fibbonachiRecursive(10), 55);
 }
 
+TEST(lesson01, fibf0) {
+    GTEST_ASSERT_EQ(fibbonachiFast(0), 0);
+}
+
+TEST(lesson01, fibf1) {
+    GTEST_ASSERT_EQ(fibbonachiFast(1), 1);
+}
+
+TEST(lesson01, fibf2) {
+    GTEST_ASSERT_EQ(fibbonachiFast(2), 1);
+}
+
+TEST(lesson01, fibf3) {
+    GTEST_ASSERT_EQ(fibbonachiFast(3), 2);
+}
+
+TEST(lesson01, fibf4) {
+    GTEST_ASSERT_EQ(fibbonachiFast(4), 3);
+}
+
+TEST(lesson01, fibf10) {
+    GTEST_ASSERT_EQ(fibbonachiFast(10), 55);
+}
+
 TEST(lesson01, fib100) {
-//    fibbonachiRecursive(100); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
-//    fibbonachiFast(100);
+    fibbonachiFast(20);
+    fibbonachiRecursive(20); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
+
 }
 
 TEST(lesson01, findX1) {
