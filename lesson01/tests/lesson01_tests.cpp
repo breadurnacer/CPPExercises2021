@@ -2,7 +2,7 @@
 
 #include "../src/some_math.h"
 
-// TODO 00 Если вы видите ошибку Process finished with exit code -1073741515 (0xC0000135):
+
 // Скопируйте из папки cmake-build-debug/bin/ файлы
 // - gtest_maind.dll
 // - gtestd.dll
@@ -59,7 +59,7 @@ TEST(lesson01, fibf10) {
 
 TEST(lesson01, fib100) {
     fibbonachiFast(20);
-    fibbonachiRecursive(20); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
+    fibbonachiRecursive(20);
 
 }
 

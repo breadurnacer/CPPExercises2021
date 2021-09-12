@@ -1,4 +1,5 @@
 #include "some_math.h"
+#include <cfloat>
 
 int fibbonachiRecursive(int n) {
     if(n==0){return 0;}
@@ -28,17 +29,39 @@ int fibbonachiFast(int n) {
 }
 
 double solveLinearAXB(double a, double b) {
-    // TODO 10 решите линейное уравнение a*x+b=0 а если решения нет - верните наибольшее значение double - найдите как это сделать в интернете по запросу "so cpp double max value" (so = stackoverflow = сайт где часто можно найти ответы на такие простые запросы), главное НЕ КОПИРУЙТЕ ПРОСТО ЧИСЛО, ПОЖАЛУЙСТААаа
     // если решений сколь угодно много - верните максимальное значение со знаком минус
     double x = 0.0;
+    if(a!=0){
+        x = -b/a;
+    }else{
+        if (b == 0) { return -DBL_MAX; }
+        if (b != 0) { return DBL_MAX; }
+    }
     return x;
 }
 
 std::vector<double> solveSquare(double a, double b, double c) {
     // TODO 20 решите квадратное уравнение вида a*x^2+b*x+c=0
-    // если корня два - они должны быть упорядочены по возрастанию
     std::vector<double> results;
+
+    double D = b*b - 4*a*c;
+    double x1, x2;
+    if(a!=0){
+    if(D>0){
+        x1 = (-b - sqrt(D))/(2*a);
+        x2 = (-b + sqrt(D))/(2*a);
+        results.push_back(x1);
+        results.push_back(x2);
+    }else if(D == 0){
+        results.push_back((-b)/(2*a));
+    }}else{
+        results.push_back(solveLinearAXB(b,c));
+        return results;
+    }
+
+
+    // если корня два - они должны быть упорядочены по возрастанию
+
     // чтобы добавить в вектор элемент - нужно вызвать у него метод push_back:
-    results.push_back(23.9);
     return results;
 }
