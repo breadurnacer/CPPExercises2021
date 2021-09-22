@@ -10,19 +10,18 @@ cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
     // чем больше значение одного из трех чисел - тем насыщеннее его оттенок
     // всего их диапазон значений - от 0 до 255 включительно
     // т.е. один байт, поэтому мы используем ниже тип unsigned char - целое однобайтовое неотрицательное число
-    cv::Vec3b color = image.at<cv::Vec3b>(13, 5); // взяли и узнали что за цвет в пикселе в 14-ом ряду (т.к. индексация с нуля) и 6-ой колонке
-    unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
+    for(int i = 0; i < image.cols; ++i){
+        for(int j = 0; j < image.rows; ++j){
+    cv::Vec3b color = image.at<cv::Vec3b>(j, i);
+    unsigned char blue = color[0];
     unsigned char green = color[1];
     unsigned char red = color[2];
-
-    // как получить белый цвет? как получить черный цвет? как получить желтый цвет?
-    // поэкспериментируйте! например можете всю картинку заполнить каким-то одним цветом
-
-    // пример как заменить цвет по тем же координатам
-    red = 255;
-    // запустите эту версию функции и посмотрите на получившуюся картинку - lesson03/resultsData/01_blue_unicorn.jpg
-    // какой пиксель изменился? почему он не чисто красный?
-    image.at<cv::Vec3b>(13, 5) = cv::Vec3b(blue, green, red);
+    if(blue == 0 && green == 0 && red == 0){
+        blue = 255;
+        green = 0;
+        red = 0;
+    }
+    image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
 
     return image;
 }
@@ -32,6 +31,19 @@ cv::Mat invertImageColors(cv::Mat image) {
     // т.е. пусть ночь станет днем, а сумрак рассеется
     // иначе говоря замените каждое значение яркости x на (255-x) (т.к находится в диапазоне от 0 до 255)
 
+    for(int i = 0; i < image.cols; ++i){
+        for(int j = 0; j < image.rows; ++j){
+            cv::Vec3b color = image.at<cv::Vec3b>(j, i);
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+
+                blue = 255 - blue;
+                green = 255 - green;
+                red = 255 - red;
+
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
+
     return image;
 }
 
@@ -40,8 +52,25 @@ cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background) {
     // т.е. что-то вроде накладного фона получится
 
     // гарантируется что размеры картинок совпадают - проверьте это через rassert, вот например сверка ширины:
-    rassert(object.cols == background.cols, 341241251251351);
+    rassert(object.cols == background.cols, "cols should be ==");
+    rassert(object.rows == background.rows, "rows should be ==");
 
+    for(int i = 0; i < object.cols; ++i){
+        for(int j = 0; j < object.rows; ++j){
+            cv::Vec3b color = object.at<cv::Vec3b>(j, i);
+            cv::Vec3b backcolor = background.at<cv::Vec3b>(j,i);
+
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+
+            unsigned char blueback = backcolor[0];
+            unsigned char greenback = backcolor[1];
+            unsigned char redback = backcolor[2];
+            if(blue == 0 && green == 0 && red == 0){
+                object.at<cv::Vec3b>(j, i) = cv::Vec3b(blueback, greenback, redback);
+            }
+        }}
     return object;
 }
 

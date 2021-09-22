@@ -13,6 +13,9 @@ void task1() {
     // TODO выведите в консоль разрешение картинки (ширина x высота)
     int width = 0; // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
     int height = 0;
+
+    width = imgUnicorn.cols;
+    height = imgUnicorn.rows;
     std::cout << "Unicorn image loaded: " << width << "x" << height << std::endl;
 
     // создаем папку в которую будем сохранять результаты - lesson03/resultsData/
@@ -21,16 +24,22 @@ void task1() {
         std::filesystem::create_directory(resultsDir); // то создаем ее
     }
 
-    cv::Mat blueUnicorn = makeAllBlackPixelsBlue(imgUnicorn); // TODO реализуйте функцию которая каждый пиксель картинки который близок к белому - делает синим
+    cv::Mat blueUnicorn = makeAllBlackPixelsBlue(imgUnicorn.clone()); // TODO реализуйте функцию которая каждый пиксель картинки который близок к белому - делает синим
     std::string filename = resultsDir + "01_blue_unicorn.jpg"; // удобно в начале файла писать число, чтобы файлы были в том порядке в котором мы их создали
     cv::imwrite(filename, blueUnicorn);
 
-    cv::Mat invertedUnicorn = invertImageColors(imgUnicorn); // TODO реализуйте функцию которая каждый цвет картинки инвертирует
-    // TODO сохраните резльутат в ту же папку, но файл назовите "02_inv_unicorn.jpg"
 
-//    cv::Mat castle; // TODO считайте с диска картинку с замком - castle.png
-//    cv::Mat unicornInCastle = addBackgroundInsteadOfBlackPixels(imgUnicorn, castle); // TODO реализуйте функцию которая все черные пиксели картинки-объекта заменяет на пиксели с картинки-фона
+    // TODO сохраните резльутат в ту же папку, но файл назовите "02_inv_unicorn.jpg"
+    cv::Mat invertUnicorn = invertImageColors(imgUnicorn.clone());
+    std::string filename1 = resultsDir + "02_inv_unicorn.jpg";
+    cv::imwrite(filename1, invertUnicorn);
+
+
+    cv::Mat castle = cv::imread("lesson03/data/castle.png"); // TODO считайте с диска картинку с замком - castle.png
+    cv::Mat unicornInCastle = addBackgroundInsteadOfBlackPixels(imgUnicorn.clone(), castle); // TODO реализуйте функцию которая все черные пиксели картинки-объекта заменяет на пиксели с картинки-фона
     // TODO сохраните результат в ту же папку, назовите "03_unicorn_castle.jpg"
+    std::string filename2 = resultsDir + "03_unicorn_castle.jpg";
+    cv::imwrite(filename2, unicornInCastle);
 
 //    cv::Mat largeCastle; // TODO считайте с диска картинку с большим замком - castle_large.png
 //    cv::Mat unicornInLargeCastle = addBackgroundInsteadOfBlackPixelsLargeBackground(imgUnicorn, largeCastle); // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
