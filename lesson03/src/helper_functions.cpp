@@ -1,6 +1,8 @@
 #include "helper_functions.h"
-
+#include <ctime>
 #include <libutils/rasserts.h>
+#include <cstdlib>
+#include <iostream>
 
 
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
@@ -76,8 +78,95 @@ cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background) {
 
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground) {
     // теперь вам гарантируется что largeBackground гораздо больше - добавьте проверок этого инварианта (rassert-ов)
-
+    rassert(largeBackground.cols > object.cols && largeBackground.rows > object.rows, "background is not enough big.");
     // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
+    int y0 = (largeBackground.rows - object.rows)/2;
+    int x0 = (largeBackground.cols - object.cols)/2;
+
+    for(int i = 0; i < object.cols; ++i){
+        for(int j = 0; j < object.rows; ++j){
+            cv::Vec3b color = object.at<cv::Vec3b>(j, i);
+            //cv::Vec3b backcolor = largeBackground.at<cv::Vec3b>(y0+ j,x0+ i);
+            if(color[0] != 0 || color[1] !=0 || color[2] != 0 ){
+                largeBackground.at<cv::Vec3b>(y0+ j,x0+ i) = color;
+            }
+        }
+    }
 
     return largeBackground;
+}
+
+cv::Mat addUnicornsOnLargeBackground(cv::Mat object, cv::Mat largeBackground) {
+
+    rassert(largeBackground.cols > object.cols && largeBackground.rows > object.rows, "background is not enough big.");
+
+    std::srand((unsigned)std::time(0));
+    int N = std::rand() % 101;
+for(int f = 0; f < N; ++f){
+    int y0 = std::rand() % (largeBackground.rows + 1 - object.rows);
+    int x0 = std::rand() % (largeBackground.cols + 1 - object.cols);
+
+    for (int i = 0; i < object.cols; ++i) {
+        for (int j = 0; j < object.rows; ++j) {
+            cv::Vec3b color = object.at<cv::Vec3b>(j, i);
+            //cv::Vec3b backcolor = largeBackground.at<cv::Vec3b>(y0+ j,x0+ i);
+            if (color[0] != 0 || color[1] != 0 || color[2] != 0) {
+                largeBackground.at<cv::Vec3b>(y0 + j, x0 + i) = color;
+            }
+        }
+    }
+}
+
+    return largeBackground;
+}
+
+cv::Mat makeAllBlackPixelsToRandomColor(cv::Mat image){
+    std::srand((unsigned)std::time(0));
+    int randBlue = std::rand()%256;
+    int randGreen = std::rand()%256;
+    int randRed = std::rand()%256;
+    for(int i = 0; i < image.cols; ++i){
+        for(int j = 0; j < image.rows; ++j){
+            cv::Vec3b color = image.at<cv::Vec3b>(j, i);
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+            if(blue == 0 && green == 0 && red == 0){
+                blue = randBlue;
+                green = randGreen;
+                red = randRed;
+            }
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
+
+    return image;
+}
+
+cv::Mat makeAllClickedPixelsToRed(cv::Mat frame, std::vector<int> XClicks, std::vector<int> YClicks){
+    for(int i = 0; i < XClicks.size(); ++i){
+        frame.at<cv::Vec3b>(YClicks[i], XClicks[i]) = cv::Vec3b(0,0,255);
+    }
+    return frame;
+}
+
+cv::Mat makeLargeCastleInsteadClickedColor(cv::Mat image, int lastX, int lastY, cv::Mat largeCastle){
+    cv::Vec3b colorBG = image.at<cv::Vec3b>(lastY, lastX);
+    unsigned char blueBG = colorBG[0];
+    unsigned char greenBG = colorBG[1];
+    unsigned char redBG = colorBG[2];
+
+
+    for(int i = 0; i < image.cols; ++i){
+        for(int j = 0; j < image.rows; ++j) {
+            cv::Vec3b color = image.at<cv::Vec3b>(j, i);
+            cv::Vec3b colorCastle = largeCastle.at<cv::Vec3b>(j,i);
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+            if (abs(blue - blueBG) <= 5 && abs(green - greenBG) <= 5 && abs(red - redBG) <= 5) {
+                blue = colorCastle[0];
+                green = colorCastle[1];
+                red = colorCastle[2];
+            }
+             image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
+    return image;
 }
