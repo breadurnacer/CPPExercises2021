@@ -170,11 +170,16 @@ void task4() {
         cv::imshow("video",
                    makeLargeCastleInsteadClickedColor(content.frame.clone(), content.lastClickX, content.lastClickY, largeCastle));
 
+        cv::Mat maskOfBG = maskBackGround(content.frame.clone(), content.lastClickX, content.lastClickY);
 
     }
     // TODO подумайте, а как бы отмаскировать фон целиком несмотря на то что он разноцветный?
     // а как бы вы справились с тем чтобы из фотографии с единорогом и фоном удалить фон зная как выглядит фон?
     // а может сделать тот же трюк с вебкой - выйти из вебки в момент запуска программы, и первый кадр использовать как кадр-эталон с фоном который надо удалять (делать прозрачным)
+}
+
+void task5(){
+
 }
 
 int main() {
@@ -183,6 +188,7 @@ int main() {
        //task2();
         //task3();
        task4();
+      //task5();
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;

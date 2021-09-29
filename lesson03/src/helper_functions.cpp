@@ -170,3 +170,66 @@ cv::Mat makeLargeCastleInsteadClickedColor(cv::Mat image, int lastX, int lastY, 
              image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
     return image;
 }
+
+
+cv::Mat maskBackGround(cv::Mat image, int lastX, int lastY){
+    cv::Mat resMask(image.rows, image.cols, CV_8UC1, Scalar((unsigned char)0));
+
+    cv::Vec3b colorBG = image.at<cv::Vec3b>(lastY, lastX);
+    unsigned char blueBG = colorBG[0];
+    unsigned char greenBG = colorBG[1];
+    unsigned char redBG = colorBG[2];
+
+
+    for(int i = 0; i < image.cols; ++i){
+        for(int j = 0; j < image.rows; ++j) {
+            cv::Vec3b color = image.at<cv::Vec3b>(j, i);
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+            if (abs(blue - blueBG) <= 5 && abs(green - greenBG) <= 5 && abs(red - redBG) <= 5) {
+                resMask.at<unsigned char>(ny,nx) = 1;
+            }
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
+    return image;
+}
+
+
+
+cv::Mat dilate(cv::Mat mask, int r){
+    cv::Mat resMask = mask.clone();
+
+    for(int x = 0; x < mask.cols; ++x){
+        for(int y = 0; y < mask.rows; ++y){
+            if(mask.at<unsigned char>(y,x) == 1){
+            for(int dx = -r; dx < r; ++r){
+                for(int dy = -r; dy < r; ++r){
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    if(!(nx<0 || nx >= mask.cols || ny < 0 || ny >= mask.rows)){
+                        resMask.at<unsigned char>(ny,nx) = 1;
+                    }
+                }
+            }}}}
+
+    return resMask;
+}
+
+cv::Mat erode(cv::Mat mask, int r){
+    cv::Mat resMask = mask.clone();
+
+    for(int x = 0; x < mask.cols; ++x){
+        for(int y = 0; y < mask.rows; ++y){
+            if(mask.at<unsigned char>(y,x) == 0){
+                for(int dx = -r; dx < r; ++r){
+                    for(int dy = -r; dy < r; ++r){
+                        int nx = x + dx;
+                        int ny = y + dy;
+                        if(!(nx<0 || nx >= mask.cols || ny < 0 || ny >= mask.rows)){
+                            resMask.at<unsigned char>(ny,nx) = 0;
+                        }
+                    }
+                }}}}
+
+    return resMask;
+}

@@ -17,3 +17,9 @@ cv::Mat makeAllBlackPixelsToRandomColor(cv::Mat image);
 cv::Mat makeAllClickedPixelsToRed(cv::Mat frame, std::vector<int> XClicks, std::vector<int> YClicks);
 
 cv::Mat makeLargeCastleInsteadClickedColor(cv::Mat image, int lastX, int lastY, cv::Mat largeCastle);
+
+cv::Mat dilate(cv::Mat mask, int r);
+
+cv::Mat erode(cv::Mat mask, int r);
+
+cv::Mat maskBackGround(cv::Mat image, int lastX, int lastY);
