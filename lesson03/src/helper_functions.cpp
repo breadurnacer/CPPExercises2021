@@ -230,6 +230,5 @@ cv::Mat erode(cv::Mat mask, int r){
                         }
                     }
                 }}}}
-
     return resMask;
 }

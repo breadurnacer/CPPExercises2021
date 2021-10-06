@@ -8,8 +8,15 @@ DisjointSet::DisjointSet(int size)
     parents = std::vector<int>(size);
     ranks = std::vector<int>(size);
     sizes = std::vector<int>(size);
+
+    for(int i = 0; i < size; ++i){
+        parents[i] = ROOT;
+        ranks[i] = 2;
+        sizes[i] = 2;
+    }
     // TODO - заполните вектора так чтобы на этапе конструирования эта система непересекающихся множеств состояла из:
-    // size элементов, каждый из которых состоит в своем множестве (а значит ссылка на родителя у него - на корень, т.е. на ROOT, а какой тогда ранк и размер у множества каждого элемента?)
+    // size элементов, каждый из которых состоит в своем множестве (а значит ссылка на родителя у него - на корень,
+    // т.е. на ROOT, а какой тогда ранк и размер у множества каждого элемента?)
     // TODO заполнить parents
     // TODO заполнить ranks
     // TODO заполнить sizes
@@ -19,7 +26,13 @@ int	DisjointSet::get_set(int element)
 {
     // TODO по номеру элемента нужно переходя по ссылкам на родителя дойти до самого верхнего элемента,
     // номер этого корневого элемента - номер множества на данный момент (кто вверху тот и главный, множество названо в его честь)
-    int first_of_their_kind = 0;
+    int first_of_their_kind = element;
+    int x = element;
+    while(x != ROOT){
+        x = parents[x];
+        if(x == ROOT) break;
+        first_of_their_kind = x;
+    }
 
     return first_of_their_kind;
 }
