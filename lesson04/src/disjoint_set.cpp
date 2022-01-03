@@ -39,10 +39,10 @@ int	DisjointSet::get_set(int element)
 
 int DisjointSet::count_differents() const
 {
-    // TODO посчитать сколько разных множеств (подсказка: в каждом множестве ровно один корень, а корень - это тот у кого родитель = ROOT)
+    //количество разных множеств
     int count = 0;
     for (size_t i = 0; i < this->parents.size(); i++) {
-        // ...
+        if(parents[i] == ROOT) count++;
     }
     return count;
 }
@@ -50,11 +50,19 @@ int DisjointSet::count_differents() const
 int DisjointSet::get_set_size(int element)
 {
     // TODO сообщить сколько элементов в множестве, которому принадлежит данный элемент (да, это очень просто)
-    return 0;
+    int this_set = get_set(element);
+    int count = 0;
+    for (size_t i = 0; i < this->parents.size(); i++) {
+        if(get_set(i) == this_set) count++;
+    }
+    return count;
 }
 
 int	DisjointSet::union_sets(int element0, int element1)
 {
+    int set0 = get_set(element0);
+    int set1 = get_set(element1);
+
     // TODO узнать корневые элементы этих двух элементов и посмотрев на них - решить,
     // кого из них подвесить к другому (тем самым объединить два множества)
     // при этом стоит подвешивать менее высокое дерево к более высокому (т.е. учитывая ранк),

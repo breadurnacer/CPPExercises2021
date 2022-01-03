@@ -24,6 +24,7 @@ void testSobel(const std::string &name) {
 
     // TODO реализуйте функцию считающую применение оператора Собеля к картинке
     // т.е. посчитайте производную по x и по y (в каждом пикселе хранятся две эти производные)
+    img = convertBGRToGray(img);
     cv::Mat dxy = sobelDXY(img); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
 
     cv::Mat dx = convertDXYToDX(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
@@ -50,7 +51,7 @@ int main() {
         }
 
         for (int i = 1; i <= 4; ++i) {
-            // TODO сделайте вызов тестирования картинок line11.jpg - line14.jpg
+            testSobel("line1" + std::to_string(i));
         }
 
         testSobel("line21_water_horizont");
