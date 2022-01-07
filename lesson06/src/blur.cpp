@@ -2,8 +2,41 @@
 
 #include <libutils/rasserts.h>
 
-cv::Mat blur(cv::Mat img, double sigma) {
+cv::Mat blur(cv::Mat image, double sigma) {
     // TODO формулу весов можно найти тут:
-    // https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D0%BC%D1%8B%D1%82%D0%B8%D0%B5_%D0%BF%D0%BE_%D0%93%D0%B0%D1%83%D1%81%D1%81%D1%83
-    return img;
+    int height = image.rows;
+    int width = image.cols;
+    cv::Mat img = image.clone();
+
+    int r = 5;
+
+
+    for(int i = 0; i < image.cols; ++i){
+        for(int j = 0; j < image.rows; ++j){
+            cv::Vec3b color = img.at<cv::Vec3b>(j, i);
+            unsigned char blue = 0;
+            unsigned char green = 0;
+            unsigned char red = 0;
+
+            for(int di = -r; di<=r; ++di){
+                for(int dj = -r; dj<=r; ++dj){
+                    if(i+di >= 0 && i+di < width && j+dj >= 0 && j+dj < height) {
+                        cv::Vec3b colorD = img.at<cv::Vec3b>(j, i);
+                        unsigned char blueD = colorD[0];
+                        unsigned char greenD = colorD[1];
+                        unsigned char redD = colorD[2];
+
+                        blue += (unsigned char) (blueD * gauss(dj,di,sigma));
+                        green += (unsigned char) (greenD * gauss(dj,di,sigma));
+                        red += (unsigned char) (redD * gauss(dj,di,sigma));
+                    }
+                }
+            }
+
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
+    return image;
+}
+
+double gauss(int x, int y, double sigma){
+    return (1/(2*3.14*sigma*sigma))*pow(2.7, -((x*x + y*y)/(2*sigma*sigma)));
 }
