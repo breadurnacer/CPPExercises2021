@@ -17,6 +17,7 @@ cv::Mat blur(cv::Mat image, double sigma) {
             double blue = 0;
             double green = 0;
             double red = 0;
+            double ves = 0;
 
             for(int di = -r; di<=r; ++di){
                 for(int dj = -r; dj<=r; ++dj){
@@ -29,11 +30,12 @@ cv::Mat blur(cv::Mat image, double sigma) {
                         blue +=  (blueD * gauss(dj,di,sigma));
                         green +=  (greenD * gauss(dj,di,sigma));
                         red +=  (redD * gauss(dj,di,sigma));
+                        ves += gauss(dj,di,sigma);
                     }
                 }
             }
 
-            image.at<cv::Vec3b>(j, i) = cv::Vec3b((unsigned char)blue, (unsigned char)green, (unsigned char)red);}}
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b((unsigned char)(blue/ves), (unsigned char)(green/ves), (unsigned char)(red/ves));}}
     return image;
 }
 

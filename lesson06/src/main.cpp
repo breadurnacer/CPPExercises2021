@@ -22,17 +22,17 @@ void testManySigmas(const std::string &name) {
     // при этом результирующую картинку сохраняйте с указанием какая сигма использовалась:
     // для того чтобы в название файла добавить значение этой переменной -
     // воспользуйтесь функцией преобразующей числа в строчки - std::to_string(sigma)
-    //double sigma = 10000;
-    for(double sigma = 0.2; sigma < 1.6; sigma += 0.2){
-    cv::Mat img = cv::imread("lesson06/data/" + name + ".jpg");
-    rassert(!img.empty(), 23981920813);
-    cv::Mat blur_img = blur(img.clone(), sigma);
-    cv::imwrite("lesson06/resultsData/" + name +  "_s=" + std::to_string(sigma) +".jpg", blur_img);
-    }
+    double sigma = 3;
+//    for(double sigma = 0.2; sigma < 1.6; sigma += 0.2){
 //    cv::Mat img = cv::imread("lesson06/data/" + name + ".jpg");
 //    rassert(!img.empty(), 23981920813);
 //    cv::Mat blur_img = blur(img.clone(), sigma);
 //    cv::imwrite("lesson06/resultsData/" + name +  "_s=" + std::to_string(sigma) +".jpg", blur_img);
+//    }
+    cv::Mat img = cv::imread("lesson06/data/" + name + ".jpg");
+    rassert(!img.empty(), 23981920813);
+    cv::Mat blur_img = blur(img.clone(), sigma);
+    cv::imwrite("lesson06/resultsData/" + name +  "_s=" + std::to_string(sigma) +".jpg", blur_img);
 }
 
 int main() {
