@@ -8,15 +8,15 @@ cv::Mat blur(cv::Mat image, double sigma) {
     int width = image.cols;
     cv::Mat img = image.clone();
 
-    int r = 5;
+    int r = 10;
 
 
     for(int i = 0; i < image.cols; ++i){
         for(int j = 0; j < image.rows; ++j){
             cv::Vec3b color = img.at<cv::Vec3b>(j, i);
-            unsigned char blue = 0;
-            unsigned char green = 0;
-            unsigned char red = 0;
+            double blue = 0;
+            double green = 0;
+            double red = 0;
 
             for(int di = -r; di<=r; ++di){
                 for(int dj = -r; dj<=r; ++dj){
@@ -26,14 +26,14 @@ cv::Mat blur(cv::Mat image, double sigma) {
                         unsigned char greenD = colorD[1];
                         unsigned char redD = colorD[2];
 
-                        blue += (unsigned char) (blueD * gauss(dj,di,sigma));
-                        green += (unsigned char) (greenD * gauss(dj,di,sigma));
-                        red += (unsigned char) (redD * gauss(dj,di,sigma));
+                        blue +=  (blueD * gauss(dj,di,sigma));
+                        green +=  (greenD * gauss(dj,di,sigma));
+                        red +=  (redD * gauss(dj,di,sigma));
                     }
                 }
             }
 
-            image.at<cv::Vec3b>(j, i) = cv::Vec3b(blue, green, red);}}
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b((unsigned char)blue, (unsigned char)green, (unsigned char)red);}}
     return image;
 }
 
