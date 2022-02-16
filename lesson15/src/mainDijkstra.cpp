@@ -13,6 +13,7 @@ int debugPoint(int line) {
 
 #define rassert(condition, message) if (!(condition)) { std::stringstream ss; (ss << "Assertion \"" << message << "\" failed at line " << debugPoint(__LINE__) << "!"); throw std::runtime_error(ss.str()); }
 
+const int INF = std::numeric_limits<int>::max();
 
 struct Edge {
     int u, v; // номера вершин которые это ребро соединяет
@@ -22,19 +23,32 @@ struct Edge {
     {}
 };
 
+struct Apex{
+    int num; //номер вершины
+    int distance; //кратчайшее расстояние от старта до этой точки
+    int prev_apex; //предыдущая вершина; та, из которой мы получили кратчайшее расстояние
+    bool processed; //обработана ли вершина?
+
+    Apex(int num): num(num){
+        distance = INF;
+        processed = false;
+    }
+
+};
+
 void run() {
     // https://codeforces.com/problemset/problem/20/C?locale=ru
     // Не требуется сделать оптимально быструю версию, поэтому если вы получили:
     //
     // Превышено ограничение времени на тесте 31
     //
-    // То все замечательно и вы молодец.
+    // То все замечательно, и вы молодец.
 
-    int nvertices, medges;
+    int nvertices, medges; //количество вершин и количество ребер в графе
     std::cin >> nvertices;
     std::cin >> medges;
 
-    std::vector<std::vector<Edge>> edges_by_vertex(nvertices);
+    std::vector<std::vector<Edge>> edges_by_vertex(nvertices); //список рёбер для i-той вершины
     for (int i = 0; i < medges; ++i) {
         int ai, bi, w;
         std::cin >> ai >> bi >> w;
@@ -55,24 +69,27 @@ void run() {
     const int start = 0;
     const int finish = nvertices - 1;
 
-    const int INF = std::numeric_limits<int>::max();
+    //const int INF = std::numeric_limits<int>::max();
 
-    std::vector<int> distances(nvertices, INF);
-    // TODO ...
+    //std::vector<int> distances(nvertices, INF); //список кратчайших расстояний от старта до i-той вершины
 
-//    while (true) {
-//
-//    }
 
-//    if (...) {
-//        ...
-//        for (...) {
-//            std::cout << (path[i] + 1) << " ";
-//        }
-//        std::cout << std::endl;
-//    } else {
-//        std::cout << -1 << std::endl;
-//    }
+    while (true) {
+        for(int i = 0; i < medges; ++i){
+
+        }
+
+    }
+
+    if () {
+        ...
+        for (...) {
+            std::cout << (path[i] + 1) << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << -1 << std::endl;
+    }
 }
 
 int main() {
