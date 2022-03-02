@@ -12,11 +12,9 @@
 #include <libutils/rasserts.h>
 
 bool isPixelEmpty(cv::Vec3b color) {
-    // TODO 1 реализуйте isPixelEmpty(color):
-    // - верните true если переданный цвет - полностью черный (такие пиксели мы считаем пустыми)
-    // - иначе верните false
-    rassert(false, "325235141242153: You should do TODO 1 - implement isPixelEmpty(color)!");
-    return true;
+    if(color[0]==0 && color[1]==0 && color[2]==0){
+        return true;
+    }else{return false;}
 }
 
 void run(std::string caseName) {
@@ -126,18 +124,21 @@ void run(std::string caseName) {
     cv::warpPerspective(img1, panoBothNaive, H10, panoBothNaive.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
     cv::imwrite(resultsDir + "4panoBothNaive.jpg", panoBothNaive);
 
-    // TODO 1 реализуйте isPixelEmpty(color) объявленную в начале этого файла - она пригодится нам чтобы легко понять какие пиксели в панораме пустые, какие - нет
-    // (т.е. эта функция позволит дальше понимать в этот пиксель наложилась исходная картинка или же там все еще тьма)
-
     cv::Mat panoDiff(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
     // TODO 2 вам надо заполнить panoDiff картинку так чтобы было четко ясно где pano0 картинка (объявлена выше) и pano1 картинка отличаются сильно, а где - слабо:
-    // сравните в этих двух картинках пиксели по одинаковым координатам (т.е. мы сверяем картинки) и покрасьте соответствующий пиксель panoDiff по этой логике:
+    // сравним (т.е. мы сверяем картинки) и покрасьте соответствующий пиксель panoDiff по этой логике:
     // - если оба пикселя пустые - проверяйте это через isPixelEmpty(color) (т.е. цвета черные) - результат тоже пусть черный
     // - если ровно один их пикселей пустой - результат пусть идеально белый
     // - иначе пусть результатом будет оттенок серого - пусть он тем светлее, чем больше разница между цветами пикселей
     // При этом сделайте так чтобы самый сильно отличающийся пиксель - всегда был идеально белым (255), т.е. выполните нормировку с учетом того какая максимальная разница яркости присутствует
     // Напоминание - вот так можно выставить цвет в пикселе:
     //  panoDiff.at<cv::Vec3b>(j, i) = cv::Vec3b(blueValue, greenValue, redValue);
+    for(int i = 0; ){
+        for(){
+
+        }
+    }
+
 
     cv::imwrite(resultsDir + "5panoDiff.jpg", panoDiff);
 }
