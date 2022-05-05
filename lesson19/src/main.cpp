@@ -8,6 +8,8 @@
 #include <libutils/rasserts.h>
 #include <libutils/fast_random.h>
 
+using namespace std;
+
 
 // функция создает n случайных целых чисел
 std::vector<int> generateNElements(int n) {
@@ -31,8 +33,11 @@ void perElementProcessing(std::vector<int> &data) {
 
 // многопоточная версия
 void perElementProcessingOMP(std::vector<int> &data) {
-    // TODO сделайте многопоточную версию поэлементного преобразования чисел (по той же формуле что и обычная версия выше)
-}
+#pragma omp parallel for
+    for(int i=0;i<data.size();++i)
+    {
+        data[i]=sqrtf(std::abs(data[i] * 2.0f + 23.45f));
+    }}
 
 void test1PerElementProcessing() {
     std::cout << "Test 1: per-element processing..." << std::endl;
@@ -42,14 +47,15 @@ void test1PerElementProcessing() {
 
     timer t; // запускаем таймер (на самом деле это секундомер, кек)
     perElementProcessing(data1);
+    double h1=t.elapsed();
     std::cout << "  Naive version:  " << t.elapsed() << " s" << std::endl; // выводим в консоль замер времени (в секундах)
 
     t.restart(); // перезапускаем таймер
-    perElementProcessingOMP(data2); // TODO сделайте многопоточную версию поэлементного умножения
+    perElementProcessingOMP(data2);
+    double h2=t.elapsed();
     std::cout << "  OpenMP version: " << t.elapsed() << " s" << std::endl;
 
-    // TODO рассчитайте и выведите во сколько раз быстрее отработала OpenMP версия
-    float speedup = 0.0;
+    double speedup = (h1/h2);
     std::cout << "  OpenMP speedup: x" << speedup << std::endl;
 
     // сверяем результаты (а то вдруг работает быстро не результат неправильный?)
@@ -77,10 +83,12 @@ int omp_thread_count() {
         {
             nthreads += 1;
         }
+        int sum=0;
+        #pragma omp parallel reduction(+: sum)
+        {
+            sum+=1;
+        }
     }
-
-    // TODO переделайте эту функцию так чтобы она работала через редукцию (т.е. суммирование по всем потокам)
-
     return nthreads;
 }
 
@@ -101,39 +109,70 @@ void test2TotalSum() {
     {
         t.restart(); // перезапускаем таймер
         sum = 0;
-        // TODO сделайте эту версию параллельной (НАИВНО, без критической секции и без редукции)
+        #pragma omp parallel for
         for (int i = 0; i < data.size(); ++i) {
+              #pragma omp critical
+            {
+                sum += data[i];
+            }
         }
 
-        // TODO Сначала посмотрите как она ведет себя в случае если тут есть состоянии гонки. Как отличается результат суммы? Почему так?
+
         rassert(sum == sumExpected,
                 "sum != sumExpected, sumExpected=" + std::to_string(sumExpected) + " but sum=" + std::to_string(sum));
-        // TODO После этого исправьте этот код воспользовавшись критической секцией, как изменилась скорость? Почему?
+
         std::cout << "  OpenMP version+critical:     " << t.elapsed() << " s" << std::endl;
     }
+        for(int iter=0;iter<5;++iter) {
+        {
+            t.restart(); // перезапускаем таймер
+        }
+            sum = 0;
 
+        #pragma omp parallel for reduction(+: sum)
+            for (int i = 0; i < data.size(); ++i) {
+                sum += data[i];
+            }
+            rassert(sum == sumExpected,
+                    "sum != sumExpected, sumExpected=" + std::to_string(sumExpected) + " but sum=" +
+                    std::to_string(sum));
+            std::cout << "  OpenMP version+reduction:    " << t.elapsed() << " s" << std::endl;
+        }
+
+
+    int nc = 0;
+    int nthr = omp_thread_count();
     {
         t.restart(); // перезапускаем таймер
         sum = 0;
-        // TODO сделайте эту версию параллельной (с помощью OpenMP редукции)
+        #pragma omp parallel
+        {
+            int id = 0;
+        #pragma omp critical // в критической секции рассчитаемся по номерам потоков и выведем в консоль что такой-то поток был запущен
+            {
+                id = nc;
+                ++nc;
+            }
+            long long tmp = 0;
+            for (int i = ((data.size() + nthr - 1) / nthr) * id;
+                 i < min((int) data.size(), (int) ((data.size() + nthr - 1) / nthr) * (id + 1)); ++i) {
+                tmp += data[i];
+            }
+        #pragma omp critical // в критической секции рассчитаемся по номерам потоков и выведем в консоль что такой-то поток был запущен
+            {
+                sum += tmp;
+            }
+        }
 
         rassert(sum == sumExpected,
-                "sum != sumExpected, sumExpected=" + std::to_string(sumExpected) + " but sum=" + std::to_string(sum));
-        std::cout << "  OpenMP version+reduction:    " << t.elapsed() << " s" << std::endl;
-    }
-
-
-    {
-        t.restart(); // перезапускаем таймер
-        sum = 0;
-        // TODO сделайте эту версию параллельной (с помощью САМОПИСНОЙ редукции)
-
-        rassert(sum == sumExpected,
-                "sum != sumExpected, sumExpected=" + std::to_string(sumExpected) + " but sum=" + std::to_string(sum));
+                "sum != sumExpected, sumExpected=" + std::to_string(sumExpected) + " but sum=" +
+                std::to_string(sum));
         std::cout << "  OpenMP version+my reduction: " << t.elapsed() << " s" << std::endl;
     }
     std::cout << "______________________________________________" << std::endl;
 }
+
+
 
 // _____________________________________________________________________________________________________________________
 // Эксперимент 3: поиск двух наибольших различных элементов в массиве
@@ -184,8 +223,15 @@ void test3Top2ElementSearch() {
 // _____________________________________________________________________________________________________________________
 // Эксперимент 4: придумайте код который позволит вам экспериментально выяснить как распределяются индексы цикла по потокам
 void test4HowWorkloadIsBalanced() {
-    // TODO придумайте код который позволит вам экспериментально выяснить как распределяются индексы цикла по потокам
-}
+    int n=1000;
+    vector<int> data=generateNElements(n);
+    vector<int> ans(n);
+    #pragma omp parallel for
+    for(int i=0;i<n;++i){
+        int tid = omp_get_thread_num();
+        ans[i]=tid;}
+    for (int i=0;i<n;++i) {
+        cout<<ans[i]<<' ';}}
 
 int main() {
     try {
@@ -197,7 +243,7 @@ int main() {
 
         test1PerElementProcessing();
         test2TotalSum();
-        test3Top2ElementSearch();
+        //test3Top2ElementSearch();
         test4HowWorkloadIsBalanced();
 
         return 0;

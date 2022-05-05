@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 int debugPoint(int line) {
     if (line < 0)
@@ -26,64 +27,114 @@ struct Edge {
 struct Apex{
     int num; //номер вершины
     int distance; //кратчайшее расстояние от старта до этой точки
-    int prev_apex; //предыдущая вершина; та, из которой мы получили кратчайшее расстояние
+    int prev_apex; //номер предыдущей вершины; та, из которой мы получили кратчайшее расстояние
     bool processed; //обработана ли вершина?
 
-    Apex(int num): num(num){
+    std::vector<Edge> edges; //список всех рёбер, исходящих из этой точки
+
+    Apex(int numer){
+        num = numer;
         distance = INF;
         processed = false;
+        prev_apex = -1;
     }
-
 };
 
+std::vector<Apex> apexes; //упорядоченный список вершин
+bool cmp(Apex first, Apex second) {
+    return first.distance < second.distance;
+}//КОМПАРАТОР ПО ВЕРШИНАМ. СОРТИРОВКА ВЕРШИН ПО ДИСТАНЦИЯМ (ПО ВОЗРАСТАНИЮ)
+
+
 void run() {
-    // https://codeforces.com/problemset/problem/20/C?locale=ru
-    // Не требуется сделать оптимально быструю версию, поэтому если вы получили:
-    //
-    // Превышено ограничение времени на тесте 31
-    //
-    // То все замечательно, и вы молодец.
+    int nvertices = 0; //количество вершин
+    int medges = 0; //количество ребер в графе
+    std::cin >> nvertices >> medges;
 
-    int nvertices, medges; //количество вершин и количество ребер в графе
-    std::cin >> nvertices;
-    std::cin >> medges;
 
-    std::vector<std::vector<Edge>> edges_by_vertex(nvertices); //список рёбер для i-той вершины
+    for(int i = 0; i < nvertices; ++i){
+        //std::cout<< "apex" + std::to_string(i);
+        apexes.push_back(Apex(i));
+    }//заполняем список вершинками
+
+    //std::vector<std::vector<Edge>> edges_by_vertex(nvertices); //список рёбер для i-той вершины
     for (int i = 0; i < medges; ++i) {
         int ai, bi, w;
+        //std::cout << "ai, bi, w: ";
         std::cin >> ai >> bi >> w;
         rassert(ai >= 1 && ai <= nvertices, 23472894792020);
         rassert(bi >= 1 && bi <= nvertices, 23472894792021);
-
         ai -= 1;
         bi -= 1;
-        rassert(ai >= 0 && ai < nvertices, 3472897424024);
-        rassert(bi >= 0 && bi < nvertices, 3472897424025);
 
         Edge edgeAB(ai, bi, w);
-        edges_by_vertex[ai].push_back(edgeAB);
+        apexes[ai].edges.push_back(edgeAB); //обращаемся к вершине из списка, добавляем ребро в её список рёбер
 
-        edges_by_vertex[bi].push_back(Edge(bi, ai, w)); // а тут - обратное ребро, можно конструировать объект прямо в той же строчке где он и потребовался
+        apexes[bi].edges.push_back(Edge(bi, ai, w)); // обратное ребро
     }
 
     const int start = 0;
     const int finish = nvertices - 1;
 
-    //const int INF = std::numeric_limits<int>::max();
+    apexes[start].distance = 0;
 
-    //std::vector<int> distances(nvertices, INF); //список кратчайших расстояний от старта до i-той вершины
+    std::vector<Apex> apexesRun; //вектор для пробежки по вершинам
+    for(int i = 0; i < nvertices; ++i){
+        apexesRun.push_back(apexes[i]);
+        std::cout << apexesRun[i].num <<" ";
+    }
+    std::cout<<std::endl;
+
+    //заполняем этот список вершинками
+    //первая сортировка не требуется. всё равно начнём со стартовой (нулевой) вершины
 
 
-    while (true) {
-        for(int i = 0; i < medges; ++i){
+        for(int i = start; i <= finish; ++i){ //пробегаемся по вершинам внутри списка apexesRun
+            std::vector<Edge> edges_of_apex = apexesRun[i].edges; //список всех рёбер i-той вершины
 
+            for(int j = start; j < edges_of_apex.size(); ++j){ //пробегаем по каждому ребру этой вершины
+                Edge edgej = edges_of_apex[j]; //j-ое ребро
+                int v = edgej.v; //номер вершины, в которую ведёт это ребро
+                if(apexes[v].processed == false){
+                    //проверяем, обработана ли рассматриваемая вершина
+
+                    if(apexesRun[i].distance!=INF){
+                    if(apexesRun[i].distance + edgej.w < apexes[v].distance){
+                        //проверяем: меньше ли предлагаемое вершине расстояние, чем то, которое уже в ней лежит?
+                        //если да, то положить предложенное расстояние
+                        apexes[v].distance = apexesRun[i].distance + edgej.w;
+                        apexes[v].prev_apex = apexesRun[i].num; //положить в вершину номер предыдущей "минимальной" вершины
+                    }
+                }}
+            }
+            apexesRun[i].processed = true; //вершина обработана
+            //теперь из этого списка, в общем-то, его можно удалить, потому что после обработки мы её уже не рассматриваем.
+            apexesRun.erase(apexesRun.begin() + i);
+
+            //после обработки вершины, мы (вероятно) изменили значений дистанций у других вершин. а поскольку в следующем шаге надо начать
+            //с вершины с наименьшей дистанцией, отсортируем массив
+            std::sort(apexesRun.begin(), apexesRun.end(), cmp);
+            for(int i = 0; i < apexesRun.size(); ++i){
+                std::cout << apexesRun[i].num <<" ";
+            }
+            std::cout<<std::endl;
         }
 
-    }
 
-    if () {
-        ...
-        for (...) {
+    if (apexes[finish].prev_apex != -1) {
+        std::vector<int> path;
+        int x = finish;
+        while(x!=-1){
+            path.push_back(x);
+            x = apexes[x].prev_apex;
+        }
+
+        rassert(path[0]==finish, 147862379);
+
+        std::reverse( path.begin(), path.end() );
+        rassert(path[0]==start,931709392);
+
+        for (int i = 0; i<path.size(); ++i) {
             std::cout << (path[i] + 1) << " ";
         }
         std::cout << std::endl;
